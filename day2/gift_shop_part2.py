@@ -1,13 +1,24 @@
+def principal_period(s):
+    i = (s + s).find(s, 1, -1)
+    return None if i == -1 else s[:i]
+
+
 def find_invalid_id(start: int, end: int):
     invalid_ids: list[int] = []
     for i in range(start, end + 1):
         str_i = str(i)
-        length_i = len(str_i)
-        half_i = divmod(length_i, 2)[0]
-        first = str_i[0:half_i]
-        last = str_i[half_i:]
+        repeat_seq = principal_period(str_i)
+        if repeat_seq is None:
+            continue
 
-        if first == last:
+        len_repeat_seq = len(repeat_seq)
+        len_str_i = len(str_i)
+
+        _, r = divmod(len_str_i, len_repeat_seq)
+        if r != 0:
+            continue
+
+        if str_i.replace(repeat_seq, "") == "":
             invalid_ids.append(i)
 
     return invalid_ids
