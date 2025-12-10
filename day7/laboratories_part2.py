@@ -1,23 +1,30 @@
 def main():
-    with open("input/sample.txt", "r") as file:
-        contents = file.readlines()
-    rows = len(contents)
-    columns = len(contents[0])
+    with open("input/input.txt", "r") as file:
+        first_line = file.readline()
+        possible_paths: list[int] = [0 for _ in range(len(first_line))]
+        origin = first_line.find("S")
+        possible_paths[origin] = 1
+        origins: set[int] = {origin}
+        for line in file.readlines():
+            new_origins = set()
+            while origins:
+                origin = origins.pop()
+                if line[origin] != "^":
+                    new_origins.add(origin)
+                    continue
 
-    table = [[0] * columns for _ in range(rows)]
+                left = origin - 1
+                right = origin + 1
+                new_origins.add(left)
+                new_origins.add(right)
 
-    origin = contents[0].find("S")
-    table[0][origin] = 1
+                possible_paths[left] += possible_paths[origin]
+                possible_paths[right] += possible_paths[origin]
+                possible_paths[origin] = 0
 
-    for row in range(1, rows):
-        for col in range(columns):
-            if contents[row][col] == "^":
-                table[row][col] += table[row - 1][col - 1]
-                table[row][col] += table[row - 1][col + 1]
-            else:
-                table[row][col] += table[row - 1][col]
+            origins = new_origins
 
-    print(sum(table[rows - 1]))
+        print(sum(possible_paths))
 
 
 if __name__ == "__main__":
